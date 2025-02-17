@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Maycow
+      changes:
+        - createTable:
+            tableName: "product"
+            columns:
+              - column:
+                  name: "id"
+                  type: "UUID"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: "name"
+                  type: "VARCHAR(100)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "price"
+                  type: "NUMERIC(12,2)"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "session"
+                  type: "INTEGER"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "created_at"
+                  type: "TIMESTAMP"
+                  defaultValueComputed: "CURRENT_TIMESTAMP"
+              - column:
+                  name: "updated_at"
+                  type: "TIMESTAMP"
+                  defaultValueComputed: "CURRENT_TIMESTAMP"
