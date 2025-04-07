@@ -1,22 +1,26 @@
 package com.maycowjordny.sm.application.useCase.cronjob;
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CronJobUseCase {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final WebClient webClient;
 
-    @Scheduled(cron = "0 */1 * * * *")
+    public CronJobUseCase(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl("https://sm-variedades.onrender.com").build(); 
+    }
+
+    @Scheduled(cron = "0 */1 * * * *") 
     public void pingServer() {
-        String url = "https://sm-variedades.onrender.com/cron";
-        try {
-            restTemplate.getForObject(url, String.class);
-            System.out.println("Servidor pingado com sucesso.");
-        } catch (Exception e) {
-            System.err.println("Erro ao pingar o servidor: " + e.getMessage());
-        }
+        webClient.get()
+                .uri("/ping")
+                .retrieve()
+                .bodyToMono(String.class)
+                .subscribe(
+                        response -> System.out.println("✅ Ping realizado com sucesso! Resposta: " + response),
+                        error -> System.err.println("❌ Erro ao pingar: " + error.getMessage())
+                );
     }
 }
