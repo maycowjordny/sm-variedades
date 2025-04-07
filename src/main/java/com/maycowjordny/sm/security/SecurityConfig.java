@@ -1,5 +1,4 @@
 package com.maycowjordny.sm.security;
-
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -12,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,13 +25,14 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth").permitAll()
-                            .requestMatchers("/user").permitAll()
-                            .requestMatchers("/cron").permitAll();
-                    auth.anyRequest().authenticated();
-                }).addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilita CORS
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> {
+                auth.requestMatchers("/auth", "/user", "/cron").permitAll();
+                auth.anyRequest().authenticated();
+            })
+            .addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
 
         return http.build();
     }
@@ -42,16 +42,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080"));
+        config.setAllowedOrigins(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        return new CorsFilter(corsConfigurationSource());
     }
 }
