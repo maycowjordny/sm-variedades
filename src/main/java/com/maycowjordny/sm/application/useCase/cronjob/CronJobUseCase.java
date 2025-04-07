@@ -11,7 +11,7 @@ public class CronJobUseCase {
 
     @Scheduled(cron = "0 */1 * * * *")
     public void pingServer() {
-        String url = "https://api-fit-caloria.onrender.com/cron";
+        String url = "https://sm-variedades.onrender.com/cron";
         try {
             restTemplate.getForObject(url, String.class);
             System.out.println("Servidor pingado com sucesso.");
