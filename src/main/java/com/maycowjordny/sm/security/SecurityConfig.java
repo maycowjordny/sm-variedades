@@ -41,7 +41,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("https://smvariedades.netlify.app"));
         config.setAllowCredentials(true);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         config.setExposedHeaders(List.of("Authorization"));
     
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
