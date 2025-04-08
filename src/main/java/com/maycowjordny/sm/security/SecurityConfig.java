@@ -26,11 +26,9 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
             .csrf(csrf -> csrf.disable()) 
-            .authorizeHttpRequests(auth -> 
-                auth.requestMatchers("/auth","/user","/ping")
-                .permitAll()
-                    .anyRequest().authenticated()  
-            ).addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
+            .authorizeHttpRequests(auth -> auth
+            .anyRequest().permitAll() 
+        ).addFilterBefore(securityFilter, BasicAuthenticationFilter.class);
 
         return http.build();
     }
