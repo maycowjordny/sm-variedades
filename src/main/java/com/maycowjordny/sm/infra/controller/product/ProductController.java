@@ -1,24 +1,34 @@
 package com.maycowjordny.sm.infra.controller.product;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.maycowjordny.sm.application.useCase.product.CreateProductUseCase;
 import com.maycowjordny.sm.application.useCase.product.DeleteProductUseCase;
+import com.maycowjordny.sm.application.useCase.product.FindProductByIdUseCase;
 import com.maycowjordny.sm.application.useCase.product.ListProductsUseCase;
 import com.maycowjordny.sm.application.useCase.product.UpdateProductUseCase;
 import com.maycowjordny.sm.domain.model.Product;
 import com.maycowjordny.sm.infra.dto.ListProductsDtoResponse;
 import com.maycowjordny.sm.infra.dto.ProductDtoRequest;
 import com.maycowjordny.sm.infra.mapper.ProductMapper;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
@@ -28,6 +38,7 @@ public class ProductController {
     private final ListProductsUseCase listProductsUseCase;
     private final UpdateProductUseCase updateProductUseCase;
     private final DeleteProductUseCase deleteProductUseCase;
+    private final FindProductByIdUseCase findProductByIdUseCase;
 
     @PostMapping("/add")
     public ResponseEntity<UUID> create(@Valid @RequestBody ProductDtoRequest productDtoRequest){
@@ -62,5 +73,12 @@ public class ProductController {
     public ResponseEntity<String> delete(@PathVariable UUID id){
         deleteProductUseCase.execute(id);
         return ResponseEntity.ok().body("Produto deletado com sucesso!");
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> findById(@PathVariable UUID id){
+       final var result = findProductByIdUseCase.execute(id);
+        return ResponseEntity.ok().body(result);
     }
 }
